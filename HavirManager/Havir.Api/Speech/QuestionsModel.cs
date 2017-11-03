@@ -44,10 +44,7 @@ namespace Havir.Api.Speech
 
         public void Execute(string keyword)
         {
-            if (string.IsNullOrWhiteSpace(this.Audio) || this.Audio == "#value")
-                EmitMessage(this.Description);
-            else
-                EmitMessage(this.Audio);
+            _EmitActionMessage();
             if (Type != NodeType.Decision)
             {
                 var nextQuestion = _answer.Select(x => x.Target).FirstOrDefault();
@@ -62,6 +59,13 @@ namespace Havir.Api.Speech
                 if (OnQuestionSelected != null)
                     OnQuestionSelected(this);
             }
+        }
+
+        private void _EmitActionMessage()
+        {
+            var audio = (string.IsNullOrWhiteSpace(Audio) || Audio == "#value") ? Description : Audio;
+            var animation = (string.IsNullOrWhiteSpace(Animation) || Animation == "#value") ? Description : Animation;
+            EmitMessage(string.Format("{0}|{1}", audio, animation));
         }
 
         public void AddArista(Answer arista)
