@@ -6,3 +6,11 @@ C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\Windows\Havir.Main\Ha
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\Windows\Havir.Main\Havir.Sockets.ServerTester\obj\Debug\Havir.Sockets.ServerTester.csprojResolveAssemblyReference.cache
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\Windows\Havir.Main\Havir.Sockets.ServerTester\obj\Debug\Havir.Sockets.ServerTester.exe
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\Windows\Havir.Main\Havir.Sockets.ServerTester\obj\Debug\Havir.Sockets.ServerTester.pdb
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Sockets.ServerTester\bin\Debug\Havir.Sockets.ServerTester.exe.config
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Sockets.ServerTester\bin\Debug\Havir.Sockets.ServerTester.exe
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Sockets.ServerTester\bin\Debug\Havir.Sockets.ServerTester.pdb
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Sockets.ServerTester\bin\Debug\Havir.Sockets.dll
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Sockets.ServerTester\bin\Debug\Havir.Sockets.pdb
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Sockets.ServerTester\obj\Debug\Havir.Sockets.ServerTester.csprojResolveAssemblyReference.cache
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Sockets.ServerTester\obj\Debug\Havir.Sockets.ServerTester.exe
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Sockets.ServerTester\obj\Debug\Havir.Sockets.ServerTester.pdb

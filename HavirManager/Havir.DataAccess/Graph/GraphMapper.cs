@@ -34,8 +34,10 @@ namespace Assets.HAVIR.Scripts.Game.Speech.Graph
                 {
                     var data = d5.Value.Split('|');
                     description = data[0];
-                    audio = data.Any(x => x.StartsWith("@audio")) ? string.Empty : data.FirstOrDefault(x => x.StartsWith("@audio"));
-                    animation = data.Any(x => x.StartsWith("@animation")) ? string.Empty : data.FirstOrDefault(x => x.StartsWith("@animation"));
+                    audio = data[1].Replace("@audio-","");
+                    //data.Any(x => x.Trim().IndexOf("audio-")>=0) ? string.Empty : data.FirstOrDefault(x => x.StartsWith("@audio-"));
+                    animation = data[2].Replace("@animation-", "");
+                        //data.Any(x => x.IndexOf("animation-") >= 0) ? string.Empty : data.FirstOrDefault(x => x.StartsWith("@animation-"));
                 }
 
                 var genericNode = (XElement)d6.FirstNode;

@@ -13,3 +13,10 @@ C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirMa
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.DataAccess\obj\Debug\Havir.DataAccess.dll
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.DataAccess\obj\Debug\Havir.DataAccess.pdb
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.DataAccess\obj\Debug\Havir.DataAccess.csproj.CoreCompileInputs.cache
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.DataAccess\bin\Debug\Havir.DataAccess.dll
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.DataAccess\bin\Debug\Havir.DataAccess.pdb
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.DataAccess\bin\Debug\Havir.Api.dll
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.DataAccess\bin\Debug\Havir.Api.pdb
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.DataAccess\obj\Debug\Havir.DataAccess.csprojResolveAssemblyReference.cache
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.DataAccess\obj\Debug\Havir.DataAccess.dll
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.DataAccess\obj\Debug\Havir.DataAccess.pdb

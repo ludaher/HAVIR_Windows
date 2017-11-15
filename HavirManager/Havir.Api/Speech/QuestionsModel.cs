@@ -65,7 +65,7 @@ namespace Havir.Api.Speech
         {
             var audio = (string.IsNullOrWhiteSpace(Audio) || Audio == "#value") ? Description : Audio;
             var animation = (string.IsNullOrWhiteSpace(Animation) || Animation == "#value") ? Description : Animation;
-            EmitMessage(string.Format("{0}|{1}", audio, animation));
+            EmitMessage(string.Format("{0}|{1}", audio.Trim(), animation.Trim()));
         }
 
         public void AddArista(Answer arista)

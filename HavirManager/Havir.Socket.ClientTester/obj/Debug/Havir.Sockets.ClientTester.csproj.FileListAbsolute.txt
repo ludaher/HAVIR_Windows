@@ -6,3 +6,11 @@ C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\Windows\Havir.Main\Ha
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\Windows\Havir.Main\Havir.Socket.ClientTester\obj\Debug\Havir.Sockets.ClientTester.csprojResolveAssemblyReference.cache
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\Windows\Havir.Main\Havir.Socket.ClientTester\obj\Debug\Havir.Socket.ClientTester.exe
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\Windows\Havir.Main\Havir.Socket.ClientTester\obj\Debug\Havir.Socket.ClientTester.pdb
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Socket.ClientTester\bin\Debug\Havir.Socket.ClientTester.exe.config
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Socket.ClientTester\bin\Debug\Havir.Socket.ClientTester.exe
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Socket.ClientTester\bin\Debug\Havir.Socket.ClientTester.pdb
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Socket.ClientTester\bin\Debug\Havir.Sockets.dll
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Socket.ClientTester\bin\Debug\Havir.Sockets.pdb
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Socket.ClientTester\obj\Debug\Havir.Sockets.ClientTester.csprojResolveAssemblyReference.cache
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Socket.ClientTester\obj\Debug\Havir.Socket.ClientTester.exe
+C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.Socket.ClientTester\obj\Debug\Havir.Socket.ClientTester.pdb

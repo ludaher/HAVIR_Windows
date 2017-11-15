@@ -14,7 +14,7 @@ public class HavirClient : MonoBehaviour
     void Start()
     {
         serverProcess = new Process();
-        serverProcess.StartInfo.FileName = @"C:\AppData\HAVIR\Console\Havir.Main.exe";
+        serverProcess.StartInfo.FileName = @"D:\AppData\HAVIR\Console\Havir.Main.exe";
         serverProcess.Start();
 
         var client = new SocketClient();
@@ -32,8 +32,8 @@ public class HavirClient : MonoBehaviour
 
     private void OnRecivedMessageHandler(string message)
     {
-        VoiceManager.Stop();
-        VoiceManager.AddToSpeechQueue(message);
+        //VoiceManager.Stop();
+        VoiceManager.AddToSpeechQueue(message.Split('|')[0]);
     }
 
     // Update is called once per frame

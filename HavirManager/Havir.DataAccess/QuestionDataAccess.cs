@@ -17,7 +17,7 @@ namespace Havir.DataAccess
 
         public List<Question> GetAll()
         {
-            var graph = GraphMapper.GetGraphNodes(@"C:\AppData\HAVIR\BasicDialog.graphml");
+            var graph = GraphMapper.GetGraphNodes(@"D:\AppData\HAVIR\BasicDialog.graphml");
             return graph;
         }
 
