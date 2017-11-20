@@ -38,7 +38,6 @@ namespace Havir.Manager
         {
             _scriptManager.Init();
 
-
             Recognizer.AddWildcardGrammar("Pregunta", new string[] { "quiero saber", "Deseo saber de", "quiero saber de", "hábleme de " });
             Recognizer.OnWilcardRecognized += OnWilcardRecognizedHandler;
 
