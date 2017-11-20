@@ -34,10 +34,10 @@ namespace Assets.HAVIR.Scripts.Game.Speech.Graph
                 {
                     var data = d5.Value.Split('|');
                     description = data[0];
-                    audio = data[1].Replace("@audio-","");
+                    audio = (data.Length > 1) ? data[1].Replace("@audio-", "") : description;
                     //data.Any(x => x.Trim().IndexOf("audio-")>=0) ? string.Empty : data.FirstOrDefault(x => x.StartsWith("@audio-"));
-                    animation = data[2].Replace("@animation-", "");
-                        //data.Any(x => x.IndexOf("animation-") >= 0) ? string.Empty : data.FirstOrDefault(x => x.StartsWith("@animation-"));
+                    animation = (data.Length > 2) ? data[2].Replace("@animation-", "") : description;
+                    //data.Any(x => x.IndexOf("animation-") >= 0) ? string.Empty : data.FirstOrDefault(x => x.StartsWith("@animation-"));
                 }
 
                 var genericNode = (XElement)d6.FirstNode;
@@ -55,7 +55,8 @@ namespace Assets.HAVIR.Scripts.Game.Speech.Graph
                 var edgeData = edge.Elements("{http://graphml.graphdrawing.org/xmlns}data").FirstOrDefault(x => x.Attribute("key").Value.Equals("d9"));
                 var arista = new Answer() { TargetId = edge.Attribute("target").Value };
                 string[] tempChoices;
-                if (edgeData != null) {
+                if (edgeData != null)
+                {
                     var choices = new List<string>();
                     foreach (var option in edgeData.Value.ToLower().Trim().TrimStart(',').TrimEnd(',').Split(','))
                     {

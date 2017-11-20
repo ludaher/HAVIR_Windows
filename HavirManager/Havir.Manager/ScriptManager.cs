@@ -37,13 +37,17 @@ namespace Havir.Manager
                 {
                     node.OnEmitMessage += MessageManager.EmitQuestionMessage;
                     node.OnQuestionSelected += OnQuestionSelectedHandler;
-                    foreach (var arista in node.Answer)
+                    foreach (var arista in node.Answers)
                     {
                         if (node.Type != NodeType.Decision || arista.Choices == null || arista.Choices.Any() == false)
                             continue;
-                        arista.GrammarId = AddKeywordRecognition(
-                            string.Format("#node{0}|{1}", node.Id, arista.TargetId),
-                            arista.Choices.ToArray());
+                        if (arista.Choices.Length == 1 && arista.Choices[0].ToLower() == "@wildcard")
+                            arista.GrammarId = AddWildcardRecognition(
+                                string.Format("#node{0}|{1}", node.Id, arista.TargetId));
+                        else
+                            arista.GrammarId = AddKeywordRecognition(
+                                string.Format("#node{0}|{1}", node.Id, arista.TargetId),
+                                arista.Choices.ToArray());
                     }
                 }
             }
@@ -54,10 +58,21 @@ namespace Havir.Manager
 
         private void OnQuestionSelectedHandler(Question question)
         {
-            foreach (var arista in question.Answer)
+            foreach (var arista in question.Answers)
             {
                 _recognizer.StartKeywordRecognition(arista.GrammarId);
             }
+        }
+        /// <summary>
+        /// Agrega palabras clave 
+        /// </summary>
+        /// <param name="semanticKey">Clave de identificación</param>
+        /// <param name="keywords">Palabras clave</param>
+        /// <returns></returns>
+        private Guid AddWildcardRecognition(string semanticKey)
+        {
+            var id = _recognizer.AddSemanticRecognition(semanticKey, null);
+            return id;
         }
 
         /// <summary>
@@ -97,11 +112,11 @@ namespace Havir.Manager
                     return;
                 if (currentQuestion == null || currentQuestion.IsRunning == false)
                     return;
-                foreach (var arista in currentQuestion.Answer)
+                foreach (var arista in currentQuestion.Answers)
                     _recognizer.StopKeywordRecognition(arista.GrammarId);
                 Debug.WriteLine("Ejecutando handler: " + semanticKey + " Text: " + text);
                 nextQuestion.Execute(text);
-                foreach (var arista in nextQuestion.Answer)
+                foreach (var arista in nextQuestion.Answers)
                     _recognizer.StartKeywordRecognition(arista.GrammarId);
             }
             catch (Exception ex)

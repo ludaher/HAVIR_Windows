@@ -3,6 +3,7 @@ using Assets.HAVIR.Scripts.Game.Speech.Graph;
 using Havir.Api.Speech;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace Havir.DataAccess
 
         public List<Question> GetAll()
         {
-            var graph = GraphMapper.GetGraphNodes(@"D:\AppData\HAVIR\BasicDialog.graphml");
+            var graph = GraphMapper.GetGraphNodes(ConfigurationManager.AppSettings.Get("GraphPath"));
             return graph;
         }
 

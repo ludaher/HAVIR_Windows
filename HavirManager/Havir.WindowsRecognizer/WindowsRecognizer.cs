@@ -77,6 +77,8 @@ namespace Havir.WindowsRecognizer
 
         public Guid AddSemanticRecognition(string semanticKey, string[] keywords)
         {
+            if (keywords == null)
+                return _AddWildCard(semanticKey);
             Choices choices = new Choices(keywords);
             SemanticResultKey semanticResultKey = new SemanticResultKey(semanticKey, choices);
             GrammarBuilder grammarBuilder = semanticResultKey.ToGrammarBuilder();
@@ -85,6 +87,34 @@ namespace Havir.WindowsRecognizer
             grammar.Name = id.ToString();
             grammar.Enabled = false;
             grammar.Priority = 5;
+            _recognizer.LoadGrammar(grammar);
+            semantics.Add(id, grammar);
+            return id;
+        }
+
+        private Guid _AddWildCard(string semanticKey)
+        {
+            var id = Guid.NewGuid();
+            GrammarBuilder wildcardBuilder = new GrammarBuilder();
+            wildcardBuilder.AppendWildcard();
+            SemanticResultKey passwordKey =
+              new SemanticResultKey(id.ToString(), wildcardBuilder);
+
+            GrammarBuilder grammarBuilder =
+              new GrammarBuilder("WildCard");
+            grammarBuilder.Append(passwordKey);
+
+            Grammar grammar = new Grammar(grammarBuilder);
+            grammar.Name = id.ToString();
+            grammar.Enabled = false;
+            grammar.Priority = 5;
+
+            grammar.SpeechRecognized +=
+              new EventHandler<SpeechRecognizedEventArgs>(
+                (obj, recognizer)=> {
+                    OnKeywordRecognized(new KeywordRecognizedArgs(id.ToString(), recognizer.Result.Text));
+                });
+
             _recognizer.LoadGrammar(grammar);
             semantics.Add(id, grammar);
             return id;
