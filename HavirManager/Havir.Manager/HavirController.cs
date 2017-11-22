@@ -43,7 +43,7 @@ namespace Havir.Manager
         private void OnEmitMessageHandler(string message)
         {
             Debug.WriteLine("Mensaje emitido: " + message);
-            _server.SendMessage(message);
+            _server.SendMessage(message+"\n");
         }
     }
 }

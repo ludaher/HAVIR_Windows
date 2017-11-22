@@ -101,7 +101,7 @@ namespace Havir.WindowsRecognizer
               new SemanticResultKey(id.ToString(), wildcardBuilder);
 
             GrammarBuilder grammarBuilder =
-              new GrammarBuilder("WildCard");
+              new GrammarBuilder();
             grammarBuilder.Append(passwordKey);
 
             Grammar grammar = new Grammar(grammarBuilder);
