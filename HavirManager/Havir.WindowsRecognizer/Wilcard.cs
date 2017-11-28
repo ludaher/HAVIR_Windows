@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Havir.WindowsRecognizer
 {
-    public class Wilcard
+    public class Wildcard
     {
         public string WilcardKey { get; set; }
         public string[] Keywords { get; set; }
@@ -27,5 +27,11 @@ namespace Havir.WindowsRecognizer
             keyword = null;
             return false;
         }
+    }
+
+    public class Anything
+    {
+        public bool Enabled { get; set; }
+        public string AnythingKey { get; set; }
     }
 }

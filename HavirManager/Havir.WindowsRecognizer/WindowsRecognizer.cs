@@ -17,12 +17,14 @@ namespace Havir.WindowsRecognizer
         public event WilcardRecognized OnWilcardRecognized;
 
         public Dictionary<Guid, Grammar> semantics;
-        public Dictionary<Guid, Wilcard> _wildcards;
+        public Dictionary<Guid, Wildcard> _wildcards;
+        public Dictionary<Guid, Anything> _anything;
 
         public WindowsRecognizer()
         {
             semantics = new Dictionary<Guid, Grammar>();
-            _wildcards = new Dictionary<Guid, Wilcard>();
+            _wildcards = new Dictionary<Guid, Wildcard>();
+            _anything = new Dictionary<Guid, Anything>();
             _InitRecognizer();
         }
 
@@ -53,12 +55,12 @@ namespace Havir.WindowsRecognizer
             if (string.IsNullOrWhiteSpace(e.Result.Text))
                 return;
             string keyword;
-            foreach (var wilcard in _wildcards)
+            foreach (var wildcard in _wildcards)
             {
-                if (wilcard.Value.TryGetKeyword(e.Result.Text, out keyword))
+                if (wildcard.Value.TryGetKeyword(e.Result.Text, out keyword))
                 {
                     if (OnWilcardRecognized != null)
-                        OnWilcardRecognized(new WilcardRecognizedArgs(wilcard.Value.WilcardKey, keyword, e.Result.Text));
+                        OnWilcardRecognized(new WilcardRecognizedArgs(wildcard.Value.WilcardKey, keyword, e.Result.Text));
 
                 }
             }
@@ -73,12 +75,19 @@ namespace Havir.WindowsRecognizer
                     OnKeywordRecognized(new KeywordRecognizedArgs(semantic.Key, e.Result.Text));
                 }
             }
+            else
+            {
+                foreach(var anything in _anything)
+                {
+                    OnKeywordRecognized(new KeywordRecognizedArgs(anything.Value.AnythingKey, e.Result.Text));
+                }
+            }
         }
 
         public Guid AddSemanticRecognition(string semanticKey, string[] keywords)
         {
-            if (keywords == null)
-                return _AddWildCard(semanticKey);
+            if(keywords == null)
+                return _AddAnything(semanticKey);
             Choices choices = new Choices(keywords);
             SemanticResultKey semanticResultKey = new SemanticResultKey(semanticKey, choices);
             GrammarBuilder grammarBuilder = semanticResultKey.ToGrammarBuilder();
@@ -92,33 +101,40 @@ namespace Havir.WindowsRecognizer
             return id;
         }
 
-        private Guid _AddWildCard(string semanticKey)
+        private Guid _AddAnything(string semanticKey)
         {
             var id = Guid.NewGuid();
-            GrammarBuilder wildcardBuilder = new GrammarBuilder();
-            wildcardBuilder.AppendWildcard();
-            SemanticResultKey passwordKey =
-              new SemanticResultKey(id.ToString(), wildcardBuilder);
-
-            GrammarBuilder grammarBuilder =
-              new GrammarBuilder();
-            grammarBuilder.Append(passwordKey);
-
-            Grammar grammar = new Grammar(grammarBuilder);
-            grammar.Name = id.ToString();
-            grammar.Enabled = false;
-            grammar.Priority = 5;
-
-            grammar.SpeechRecognized +=
-              new EventHandler<SpeechRecognizedEventArgs>(
-                (obj, recognizer)=> {
-                    OnKeywordRecognized(new KeywordRecognizedArgs(id.ToString(), recognizer.Result.Text));
-                });
-
-            _recognizer.LoadGrammar(grammar);
-            semantics.Add(id, grammar);
+            _anything.Add(id,new Anything() { AnythingKey = semanticKey });
             return id;
         }
+
+        //private Guid _AddWildCard(string semanticKey)
+        //{
+        //    var id = Guid.NewGuid();
+        //    GrammarBuilder wildcardBuilder = new GrammarBuilder();
+        //    wildcardBuilder.AppendWildcard();
+        //    SemanticResultKey passwordKey =
+        //      new SemanticResultKey(id.ToString(), wildcardBuilder);
+
+        //    GrammarBuilder grammarBuilder =
+        //      new GrammarBuilder();
+        //    grammarBuilder.Append(passwordKey);
+
+        //    Grammar grammar = new Grammar(grammarBuilder);
+        //    grammar.Name = id.ToString();
+        //    grammar.Enabled = false;
+        //    grammar.Priority = 5;
+
+        //    grammar.SpeechRecognized +=
+        //      new EventHandler<SpeechRecognizedEventArgs>(
+        //        (obj, recognizer)=> {
+        //            OnKeywordRecognized(new KeywordRecognizedArgs(id.ToString(), recognizer.Result.Text));
+        //        });
+
+        //    _recognizer.LoadGrammar(grammar);
+        //    semantics.Add(id, grammar);
+        //    return id;
+        //}
 
         public Guid AddKeywordRecognition(string[] keywords)
         {
@@ -145,17 +161,23 @@ namespace Havir.WindowsRecognizer
             if (semantics.TryGetValue(id, out grammar))
             {
                 _recognizer.UnloadGrammar(grammar);
+                semantics.Remove(id);
             }
-            semantics.Remove(id);
+
+            Anything anything;
+            if (_anything.TryGetValue(id, out anything))
+                _anything.Remove(id);
         }
 
         public void StopKeywordRecognition(Guid id)
         {
             Grammar grammar;
             if (semantics.TryGetValue(id, out grammar))
-            {
                 grammar.Enabled = false;
-            }
+
+            Anything anything;
+            if (_anything.TryGetValue(id, out anything))
+                anything.Enabled = true;
         }
 
 
@@ -163,9 +185,11 @@ namespace Havir.WindowsRecognizer
         {
             Grammar grammar;
             if (semantics.TryGetValue(id, out grammar))
-            {
                 grammar.Enabled = true;
-            }
+
+            Anything anything;
+            if (_anything.TryGetValue(id, out anything))
+                anything.Enabled = true;
         }
         public Guid AddWildcardGrammar(string semanticKey, string[] keywords)
         {
@@ -178,7 +202,7 @@ namespace Havir.WindowsRecognizer
             Grammar grammar = new Grammar(wilcardGrammarBuilder);
             grammar.Name = id.ToString();
             _recognizer.LoadGrammar(grammar);
-            _wildcards.Add(id, new Wilcard() { WilcardKey = semanticKey, Keywords = keywords, Grammar = grammar });
+            _wildcards.Add(id, new Wildcard() { WilcardKey = semanticKey, Keywords = keywords, Grammar = grammar });
             return id;
         }
 

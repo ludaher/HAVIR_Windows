@@ -8,24 +8,30 @@ using UnityEngine;
 
 public class RecognizerManager : MonoBehaviour
 {
-    
+
     public bool running;
-    
+
     private Process serverProcess;
     private SocketClient client;
     private DialogManager dm;
     private AnimationManager am;
+    private Queue<Tuple<string[], string[]>> queue;
+    private AgentStatusManager currentAgentStatus;
 
     void Start()
     {
         dm = new DialogManager();
         am = new AnimationManager();
-        StartCoroutine("RunGame");
+        queue = new Queue<Tuple<string[], string[]>>();
+        currentAgentStatus = gameObject.GetComponent<AgentStatusManager>();
+        RunGame();
     }
 
     private void OnDestroy()
     {
-        if (serverProcess != null && serverProcess.HasExited == false)
+        if (serverProcess == null)
+            return;
+        if (serverProcess.HasExited == false)
             serverProcess.Kill();
         serverProcess.Dispose();
         running = false;
@@ -34,18 +40,17 @@ public class RecognizerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (currentAgentStatus != null && currentAgentStatus.isSpeaking == true || queue.Count == 0) return;
+        var nextItem = queue.Dequeue();
+        if (nextItem == null) return;
+        _Speech(nextItem.Item1[0]);
+        _Animation(nextItem.Item2[0]);
     }
 
-    IEnumerator RunGame()
+    void RunGame()
     {
         _StartServer();
         _InitClient();
-
-        while (running)
-        {
-            yield return null;
-        }
     }
 
     private void _StartServer()
@@ -65,56 +70,39 @@ public class RecognizerManager : MonoBehaviour
         client.OnRecivedMessage += OnRecivedMessageHandler;
         Task task = new Task(client.ReceiveDataFromServer);
         task.Start();
-        running = true;
         UnityEngine.Debug.Log("Client strated");
     }
 
 
     private void OnRecivedMessageHandler(string messages)
     {
-        foreach(var message in messages.Split('\n'))
+        foreach (var message in messages.Split('\n'))
         {
+            if (string.IsNullOrEmpty(message)) continue;
             var actions = message.Split('|');
             var audio = actions[0].Split('+');
             var animation = actions[1].Split('+');
-
-            Dispatcher.InvokeAsync(() =>
-            {
-                var corutine =_Execute(audio, animation);
-                StartCoroutine(corutine);
-            });
+            queue.Enqueue(new Tuple<string[], string[]>(audio, animation));
         }
 
     }
 
-    private IEnumerator _Execute(string[] audio, string[] animation)
-    {
-        var agent = GameObject.Find(audio[0]);
-        var sm = agent.GetComponent<AgentStatusManager>();
-        while (sm.isSpeaking == true)
-        {
-            yield return null;
-        }
-
-        _Speech(agent, audio[1]);
-        _Animation(agent, animation[1]);
-    }
-
-    private void _Speech(GameObject agent, string audio)
+    private void _Speech(string audio)
     {
         var dialog = new Dialog();
-        dialog.agent = agent;
+        dialog.agent = gameObject;
         dialog.audioFileName = audio;
-        dm = agent.GetComponent<DialogManager>();
+        dm = gameObject.GetComponent<DialogManager>();
         dm.Speak(dialog);
     }
 
-    private void _Animation(GameObject agent, string animation)
+    private void _Animation(string animation)
     {
         var animate = new Animate();
         animate.animation = animation;
-        am = agent.GetComponent<AnimationManager>();
+        am = gameObject.GetComponent<AnimationManager>();
         am.PlayAnimation(animate);
     }
 
 }
+

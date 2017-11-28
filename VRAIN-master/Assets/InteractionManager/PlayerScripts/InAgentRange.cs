@@ -4,7 +4,7 @@ public class InAgentRange : MonoBehaviour
 {
     public float timeInRange;
     protected GameObject target;
-    string tag = "AgentRange";
+    //string tag = "AgentRange";
 
     // Use this for initialization
     void Start ()

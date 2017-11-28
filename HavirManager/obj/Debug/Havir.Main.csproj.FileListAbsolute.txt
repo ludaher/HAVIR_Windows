@@ -56,3 +56,4 @@ C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirMa
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\obj\Debug\Havir.Main.csproj.CoreCompileInputs.cache
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\obj\Debug\Havir.Main.exe
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\obj\Debug\Havir.Main.pdb
+C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\VRAIN-master\Havir\Graph\BasicDialog.graphml

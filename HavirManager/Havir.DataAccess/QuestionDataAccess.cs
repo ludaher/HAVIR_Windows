@@ -18,7 +18,7 @@ namespace Havir.DataAccess
 
         public List<Question> GetAll()
         {
-            var graph = GraphMapper.GetGraphNodes(ConfigurationManager.AppSettings.Get("GraphPath"));
+            var graph = GraphMapper.GetGraphNodes("Graph/BasicDialog.graphml");
             return graph;
         }
 

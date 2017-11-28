@@ -54,7 +54,9 @@
     <Compile Include="QuestionDataAccess.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Graph\BasicDialog.graphml" />
+    <Content Include="Graph\BasicDialog.graphml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Graph\BasicDialog.graphml.meta" />
     <None Include="Graph\GraphMapper.cs.meta" />
     <None Include="Graph\PredefinedAnswers.cs.meta" />

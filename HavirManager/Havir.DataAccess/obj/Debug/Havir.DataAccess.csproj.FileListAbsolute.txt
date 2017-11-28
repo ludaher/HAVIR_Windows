@@ -20,3 +20,4 @@ C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirMa
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.DataAccess\obj\Debug\Havir.DataAccess.csproj.CoreCompileInputs.cache
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.DataAccess\obj\Debug\Havir.DataAccess.dll
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.DataAccess\obj\Debug\Havir.DataAccess.pdb
+C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.DataAccess\bin\Debug\Graph\BasicDialog.graphml

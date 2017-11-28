@@ -22,14 +22,14 @@ public class MoveManager : MonoBehaviour
 
     private void Update()
     {
-        if (move.follow && moving)
-        {
-            move.agent.transform.position = Vector3.MoveTowards(move.agent.transform.position, move.target.transform.position, move.speed);
-        }
-        else if (!move.follow && moving)
-        {
-            Debug.Log(moveTarget);
-            move.agent.transform.position = Vector3.MoveTowards(move.agent.transform.position, moveTarget, move.speed);
-        }
+        //if (move.follow && moving)
+        //{
+        //    move.agent.transform.position = Vector3.MoveTowards(move.agent.transform.position, move.target.transform.position, move.speed);
+        //}
+        //else if (!move.follow && moving)
+        //{
+        //    Debug.Log(moveTarget);
+        //    move.agent.transform.position = Vector3.MoveTowards(move.agent.transform.position, moveTarget, move.speed);
+        //}
     }
 }

@@ -15,7 +15,7 @@ namespace Havir.Sockets.Client
         public RecivedMessage OnRecivedMessage;
 
         private Socket senderSock;
-        byte[] bytes = new byte[1024];
+        byte[] bytes = new byte[10240];
 
         public void Dispose()
         {
@@ -124,6 +124,7 @@ namespace Havir.Sockets.Client
             catch (Exception exc)
             {
                 Console.WriteLine(exc.ToString());
+                OnRecivedMessage(exc.ToString());
                 throw;
             }
         }

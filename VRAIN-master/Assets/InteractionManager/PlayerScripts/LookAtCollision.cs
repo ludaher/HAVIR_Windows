@@ -4,7 +4,7 @@ public class LookAtCollision : MonoBehaviour {
 
     public float time_on_target;
     protected GameObject target;
-    string tag = "Agent";
+    //string tag = "Agent";
 
     // Use this for initialization
     void Start ()
