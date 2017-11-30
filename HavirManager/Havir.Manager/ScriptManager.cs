@@ -14,6 +14,7 @@ namespace Havir.Manager
     {
         private static List<Question> _graph;
         private IVoiceRecognizer _recognizer;
+        private Question _currentQuestion;
 
         public ScriptManager(IVoiceRecognizer recognizer)
         {
@@ -37,6 +38,12 @@ namespace Havir.Manager
                 {
                     node.OnEmitMessage += MessageManager.EmitQuestionMessage;
                     node.OnQuestionSelected += OnQuestionSelectedHandler;
+                    if (string.IsNullOrWhiteSpace(node.Keyphrase) == false)
+                    {
+                        _recognizer.StartKeywordRecognition(AddKeywordRecognition(
+                            string.Format("#node|{0}", node.Id),
+                            node.Keyphrase.Split(',')));
+                    }
                     foreach (var arista in node.Answers)
                     {
                         if (node.Type != NodeType.Decision || arista.Choices == null || arista.Choices.Any() == false)
@@ -87,15 +94,15 @@ namespace Havir.Manager
             return id;
         }
 
+
         private void OnKeywordRecognizedHandler(KeywordRecognizedArgs args)
         {
             if (args.SemanticKey.Equals("#start"))
                 _ExecuteStart(args.Text);
             else if (args.SemanticKey.StartsWith("#node"))
                 _ExecuteQuestion(args.SemanticKey, args.Text);
-
-
         }
+
 
         private void _ExecuteQuestion(string semanticKey, string text)
         {
@@ -104,20 +111,20 @@ namespace Havir.Manager
                 var nodes = semanticKey.Replace("#node", "").Split('|');
                 if (nodes.Length < 2)
                     return;
-                var currentQuestion = _graph
-                    .FirstOrDefault(x => x.Id.Equals(nodes[0]));
+                //var currentQuestion = _graph
+                //    .FirstOrDefault(x => x.Id.Equals(nodes[0]));
                 var nextQuestion = _graph
                     .FirstOrDefault(x => x.Id.Equals(nodes[1]));
                 if (nextQuestion == null)
                     return;
-                if (currentQuestion == null || currentQuestion.IsRunning == false)
-                    return;
-                foreach (var arista in currentQuestion.Answers)
-                    _recognizer.StopKeywordRecognition(arista.GrammarId);
+                if (_currentQuestion != null)
+                {
+                    foreach (var arista in _currentQuestion.Answers)
+                        _recognizer.StopKeywordRecognition(arista.GrammarId);
+                }
                 Debug.WriteLine("Ejecutando handler: " + semanticKey + " Text: " + text);
-                nextQuestion.Execute(text);
-                foreach (var arista in nextQuestion.Answers)
-                    _recognizer.StartKeywordRecognition(arista.GrammarId);
+                _currentQuestion = nextQuestion.Execute(text);
+
             }
             catch (Exception ex)
             {
@@ -132,7 +139,7 @@ namespace Havir.Manager
                 _graph[i].IsRunning = false;
             }
             var startNode = _graph.Where(x => x.Type == NodeType.Start).FirstOrDefault();
-            startNode.Execute(keyword);
+            _currentQuestion = startNode.Execute(keyword);
         }
     }
 }

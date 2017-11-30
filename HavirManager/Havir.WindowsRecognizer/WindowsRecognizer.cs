@@ -31,6 +31,8 @@ namespace Havir.WindowsRecognizer
         private void _InitRecognizer()
         {
             _recognizer = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("es-CO"));
+            _recognizer.BabbleTimeout = TimeSpan.FromSeconds(30);
+            //_recognizer.EndSilenceTimeout = TimeSpan.FromSeconds(30);
             _recognizer.LoadGrammar(new DictationGrammar());
             ///Register a handler for the SpeechRecognized event.
             ///
@@ -77,7 +79,7 @@ namespace Havir.WindowsRecognizer
             }
             else
             {
-                foreach(var anything in _anything)
+                foreach(var anything in _anything.Where(x=>x.Value.Enabled))
                 {
                     OnKeywordRecognized(new KeywordRecognizedArgs(anything.Value.AnythingKey, e.Result.Text));
                 }
@@ -86,13 +88,15 @@ namespace Havir.WindowsRecognizer
 
         public Guid AddSemanticRecognition(string semanticKey, string[] keywords)
         {
-            if(keywords == null)
+            if (keywords == null)
                 return _AddAnything(semanticKey);
+            if (keywords.Length == 1 && keywords[0].Trim().Equals(string.Empty))
+                return default(Guid);
             Choices choices = new Choices(keywords);
             SemanticResultKey semanticResultKey = new SemanticResultKey(semanticKey, choices);
             GrammarBuilder grammarBuilder = semanticResultKey.ToGrammarBuilder();
-            var id = Guid.NewGuid();
             Grammar grammar = new Grammar(grammarBuilder);
+            var id = Guid.NewGuid();
             grammar.Name = id.ToString();
             grammar.Enabled = false;
             grammar.Priority = 5;
@@ -107,35 +111,7 @@ namespace Havir.WindowsRecognizer
             _anything.Add(id,new Anything() { AnythingKey = semanticKey });
             return id;
         }
-
-        //private Guid _AddWildCard(string semanticKey)
-        //{
-        //    var id = Guid.NewGuid();
-        //    GrammarBuilder wildcardBuilder = new GrammarBuilder();
-        //    wildcardBuilder.AppendWildcard();
-        //    SemanticResultKey passwordKey =
-        //      new SemanticResultKey(id.ToString(), wildcardBuilder);
-
-        //    GrammarBuilder grammarBuilder =
-        //      new GrammarBuilder();
-        //    grammarBuilder.Append(passwordKey);
-
-        //    Grammar grammar = new Grammar(grammarBuilder);
-        //    grammar.Name = id.ToString();
-        //    grammar.Enabled = false;
-        //    grammar.Priority = 5;
-
-        //    grammar.SpeechRecognized +=
-        //      new EventHandler<SpeechRecognizedEventArgs>(
-        //        (obj, recognizer)=> {
-        //            OnKeywordRecognized(new KeywordRecognizedArgs(id.ToString(), recognizer.Result.Text));
-        //        });
-
-        //    _recognizer.LoadGrammar(grammar);
-        //    semantics.Add(id, grammar);
-        //    return id;
-        //}
-
+        
         public Guid AddKeywordRecognition(string[] keywords)
         {
             throw new NotImplementedException();
@@ -177,7 +153,7 @@ namespace Havir.WindowsRecognizer
 
             Anything anything;
             if (_anything.TryGetValue(id, out anything))
-                anything.Enabled = true;
+                anything.Enabled = false;
         }
 
 

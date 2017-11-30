@@ -20,9 +20,11 @@ namespace Havir.Api.Speech
 
         public Question Parent { get; set; }
         public string Id { get { return _id; } }
+        public string TargetId { get; set; }
         public string Description { get; set; }
         public string Audio { get; set; }
         public string Animation { get; set; }
+        public string Keyphrase { get; set; }
 
         public NodeType Type { get; set; }
         public bool IsRoot { get { return _isRoot; } }
@@ -30,27 +32,34 @@ namespace Havir.Api.Speech
         public List<Answer> Answers { get { return _answers; } }
         public bool IsRunning { get; set; }
 
-        public Question(string id, string description, string audio,
+        public Question(string targetId, string id, string keyphrase, string description, string audio,
             string animation, NodeType nodeType, bool isRoot)
         {
-            _id = id;
-            Description = description;
-            Audio = audio;
-            Animation = animation;
+            TargetId = targetId.Trim();
+            _id = id.Trim();
+            Description = description.Trim();
+            if (audio != null)
+                Audio = audio.Trim();
+            if (audio != null)
+                Animation = animation.Trim();
+            if (keyphrase != null)
+                Keyphrase = keyphrase.Trim();
             _isRoot = isRoot;
             _answers = new List<Answer>();
             Type = nodeType;
         }
 
-        public void Execute(string keyword)
+        public Question Execute(string keyword, bool kill = true)
         {
+            if (kill == true)
+                _EmitKillMessage();
             _EmitActionMessage();
             if (Type != NodeType.Decision)
             {
                 var nextQuestion = _answers.Select(x => x.Target).FirstOrDefault();
                 if (nextQuestion != null)
                 {
-                    nextQuestion.Execute(keyword);
+                    return nextQuestion.Execute(keyword, false);
                 }
             }
             else
@@ -59,12 +68,18 @@ namespace Havir.Api.Speech
                 if (OnQuestionSelected != null)
                     OnQuestionSelected(this);
             }
+            return this;
+        }
+
+        private void _EmitKillMessage()
+        {
+            EmitMessage("##kill");
         }
 
         private void _EmitActionMessage()
         {
-            var audio = (string.IsNullOrWhiteSpace(Audio) || Audio == "#value") ? Description : Audio;
-            var animation = (string.IsNullOrWhiteSpace(Animation) || Animation == "#value") ? Description : Animation;
+            var audio = (Audio == "#value") ? Description : Audio;
+            var animation = (Animation == "#value") ? Description : Animation;
             EmitMessage(string.Format("{0}|{1}", audio.Trim(), animation.Trim()));
         }
 

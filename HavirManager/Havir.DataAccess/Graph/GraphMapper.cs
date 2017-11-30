@@ -26,7 +26,9 @@ namespace Assets.HAVIR.Scripts.Game.Speech.Graph
                 var d5 = node.Elements("{http://graphml.graphdrawing.org/xmlns}data").FirstOrDefault(x => x.Attribute("key").Value.Equals("d5"));
                 var d6 = node.Elements("{http://graphml.graphdrawing.org/xmlns}data").FirstOrDefault(x => x.Attribute("key").Value.Equals("d6"));
                 string
+                    targetId = node.Attribute("id").Value,
                     id = node.Attribute("id").Value,
+                    keyphrase = "",
                     description = "",
                     audio = "",
                     animation = "";
@@ -34,9 +36,14 @@ namespace Assets.HAVIR.Scripts.Game.Speech.Graph
                 {
                     var data = d5.Value.Split('|');
                     description = data[0];
-                    audio = (data.Length > 1) ? data[1].Replace("@audio-", "") : description;
+                    audio = (data.FirstOrDefault(x => x.StartsWith("@audio-")) ?? string.Empty).Replace("@audio-", "");
+                    animation = (data.FirstOrDefault(x => x.StartsWith("@animation-")) ?? string.Empty).Replace("@animation-", "");
+                    keyphrase = (data.FirstOrDefault(x => x.StartsWith("@keyphrase-")) ?? string.Empty).Replace("@keyphrase-","");
+                    if (data.Any(x => x.StartsWith("@id-")))
+                        id = data.FirstOrDefault(x => x.StartsWith("@id-"));
+                    //audio = (data.Length > 1) ? data[1].Replace("@audio-", "") : description;
                     //data.Any(x => x.Trim().IndexOf("audio-")>=0) ? string.Empty : data.FirstOrDefault(x => x.StartsWith("@audio-"));
-                    animation = (data.Length > 2) ? data[2].Replace("@animation-", "") : description;
+                    //animation = (data.Length > 2) ? data[2].Replace("@animation-", "") : description;
                     //data.Any(x => x.IndexOf("animation-") >= 0) ? string.Empty : data.FirstOrDefault(x => x.StartsWith("@animation-"));
                 }
 
@@ -44,7 +51,7 @@ namespace Assets.HAVIR.Scripts.Game.Speech.Graph
                 var type = genericNode.Attribute("configuration").Value;
 
                 var targetEdges = graphXml.Elements("{http://graphml.graphdrawing.org/xmlns}edge").Where(x => x.Attribute("target").Value == id);
-                var graphNode = new Question(id, description, audio, animation, _getNodeType(type), targetEdges.Any());
+                var graphNode = new Question(targetId, id, keyphrase, description, audio, animation, _getNodeType(type), targetEdges.Any());
 
                 graph.Add(graphNode);
             }
@@ -68,7 +75,7 @@ namespace Assets.HAVIR.Scripts.Game.Speech.Graph
                     arista.Choices = choices.ToArray();
                 }
                 arista.Target = graph.Find(x => x.Id.Equals(arista.TargetId));
-                graph.Find(x => x.Id.Equals(edge.Attribute("source").Value)).AddArista(arista);
+                graph.Find(x => x.TargetId.Equals(edge.Attribute("source").Value)).AddArista(arista);
             }
             return graph;
         }

@@ -79,7 +79,12 @@ public class RecognizerManager : MonoBehaviour
         foreach (var message in messages.Split('\n'))
         {
             if (string.IsNullOrEmpty(message)) continue;
+            if (message.Equals("##kill"))
+            {
+                _Interrupt();
+            }
             var actions = message.Split('|');
+            if (actions.Length == 1) continue;
             var audio = actions[0].Split('+');
             var animation = actions[1].Split('+');
             queue.Enqueue(new Tuple<string[], string[]>(audio, animation));
@@ -87,8 +92,15 @@ public class RecognizerManager : MonoBehaviour
 
     }
 
+    private void _Interrupt()
+    {
+        queue.Clear();
+        currentAgentStatus.isSpeaking = false;
+    }
+
     private void _Speech(string audio)
     {
+        if (string.IsNullOrWhiteSpace(audio)) return;
         var dialog = new Dialog();
         dialog.agent = gameObject;
         dialog.audioFileName = audio;
@@ -98,6 +110,7 @@ public class RecognizerManager : MonoBehaviour
 
     private void _Animation(string animation)
     {
+        if (string.IsNullOrWhiteSpace(animation)) return;
         var animate = new Animate();
         animate.animation = animation;
         am = gameObject.GetComponent<AnimationManager>();
