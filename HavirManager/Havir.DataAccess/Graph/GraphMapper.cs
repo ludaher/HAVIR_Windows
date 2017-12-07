@@ -74,7 +74,7 @@ namespace Assets.HAVIR.Scripts.Game.Speech.Graph
                     }
                     arista.Choices = choices.ToArray();
                 }
-                arista.Target = graph.Find(x => x.Id.Equals(arista.TargetId));
+                arista.Target = graph.Find(x => x.TargetId.Equals(arista.TargetId));
                 graph.Find(x => x.TargetId.Equals(edge.Attribute("source").Value)).AddArista(arista);
             }
             return graph;
