@@ -110,7 +110,7 @@
     </node>
     <node id="n5">
       <data key="d4"/>
-      <data key="d5"><![CDATA[Temas 
+      <data key="d5"><![CDATA[Temas
 |@id-Sedes
 |@keyphrase-hablame de sedes
 |@audio-aRanking
@@ -217,7 +217,8 @@
       <data key="d4"/>
       <data key="d5"><![CDATA[Pregunta con Wildcard
 |@audio-aHola
-|@animation-telling_a_secret]]></data>
+|@animation-telling_a_secret
+|@wait-]]></data>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.decision">
           <y:Geometry height="40.0" width="80.0" x="-586.3741734374996" y="-1648.4475546818383"/>

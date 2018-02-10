@@ -1,4 +1,6 @@
 ﻿using Havir.Sockets.Client;
+using Havir.Sockets.Entities;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,17 +14,17 @@ public class RecognizerManager : MonoBehaviour
     public bool running;
 
     private Process serverProcess;
-    private SocketClient client;
+    private SocketClient<ServerActionMessage, UnityActionMessage> client;
     private DialogManager dm;
     private AnimationManager am;
-    private Queue<Tuple<string[], string[]>> queue;
+    private Queue<UnityActionMessage> queue;
     private AgentStatusManager currentAgentStatus;
 
     void Start()
     {
         dm = new DialogManager();
         am = new AnimationManager();
-        queue = new Queue<Tuple<string[], string[]>>();
+        queue = new Queue<UnityActionMessage>();
         currentAgentStatus = gameObject.GetComponent<AgentStatusManager>();
         RunGame();
     }
@@ -40,11 +42,20 @@ public class RecognizerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (currentAgentStatus != null && currentAgentStatus.isSpeaking == true || queue.Count == 0) return;
+        if (currentAgentStatus != null && currentAgentStatus.isSpeaking == true) return;
+        if (currentAgentStatus.recognizerPaused)
+        {
+            var message = new ServerActionMessage();
+            message.Resume = true;
+            client.SendMessage(message);
+            currentAgentStatus.recognizerPaused = false;
+        }
+        if (queue.Count == 0) return;
         var nextItem = queue.Dequeue();
         if (nextItem == null) return;
-        _Speech(nextItem.Item1[0]);
-        _Animation(nextItem.Item2[0]);
+        _Speech(nextItem.Audio);
+        _Animation(nextItem.Animation);
+        currentAgentStatus.recognizerPaused = nextItem.Wait;
     }
 
     void RunGame()
@@ -65,31 +76,33 @@ public class RecognizerManager : MonoBehaviour
 
     private void _InitClient()
     {
-        client = new SocketClient();
-        client.Connect(4224);
-        client.OnRecivedMessage += OnRecivedMessageHandler;
-        Task task = new Task(client.ReceiveDataFromServer);
-        task.Start();
-        UnityEngine.Debug.Log("Client strated");
+        try
+        {
+            client = new SocketClient<ServerActionMessage, UnityActionMessage>();
+            client.Connect(4224);
+            var message = JsonConvert.SerializeObject(client);
+            client.OnRecivedMessage += OnRecivedMessageHandler;
+            Task task = new Task(client.ReceiveDataFromServer);
+            task.Start();
+            UnityEngine.Debug.Log("Client strated");
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
     }
 
 
-    private void OnRecivedMessageHandler(string messages)
+    private void OnRecivedMessageHandler(UnityActionMessage message)
     {
-        foreach (var message in messages.Split('\n'))
-        {
-            if (string.IsNullOrEmpty(message)) continue;
-            if (message.Equals("##kill"))
-            {
-                _Interrupt();
-            }
-            var actions = message.Split('|');
-            if (actions.Length == 1) continue;
-            var audio = actions[0].Split('+');
-            var animation = actions[1].Split('+');
-            queue.Enqueue(new Tuple<string[], string[]>(audio, animation));
-        }
+        UnityEngine.Debug.Log("Mensaje recibido");
 
+        if (message.Message != null && message.Message.Equals("##kill"))
+        {
+            _Interrupt();
+            return;
+        }
+        queue.Enqueue(message);
     }
 
     private void _Interrupt()
@@ -106,6 +119,7 @@ public class RecognizerManager : MonoBehaviour
         dialog.audioFileName = audio;
         dm = gameObject.GetComponent<DialogManager>();
         dm.Speak(dialog);
+
     }
 
     private void _Animation(string animation)

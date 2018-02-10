@@ -1,4 +1,5 @@
-﻿using Havir.Sockets.Server;
+﻿using Havir.Sockets.Entities;
+using Havir.Sockets.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,32 +12,20 @@ namespace Havir.Sockets.ServerTester
     {
         static void Main(string[] args)
         {
-            var server = new SocketServer();
-            server.Start();
+            var server = new SocketServer<UnityActionMessage, ServerActionMessage>();
+            server.Start(3322, "localhost");
             server.OnRecivedMessage += OnRecivedMessageHandler;
             while (true)
             {
                 Console.Write("Message to clients: ");
-                var message = Console.ReadLine();
+                var message = new UnityActionMessage();
+                message.MessageType = MessageTypeEnum.Success;
+                message.Message = Console.ReadLine();
                 server.SendMessage(message);
             }
-            //var server = new AsynchronousServerListener();
-            //{
-            //    // Create a task and supply a user delegate by using a lambda expression.
-            //    var taskA = new Task(() => server.StartListening());
-            //    // Start the task.
-            //    taskA.Start();
-            //    server.OnRecivedMessage += OnRecivedMessageHandler;
-            //    while (true)
-            //    {
-            //        Console.Write("Message to clients: ");
-            //        var message = Console.ReadLine();
-            //        //server.SendMessage("<HAVIR>" + message);
-            //    }
-            //}
         }
 
-        private static void OnRecivedMessageHandler(string message)
+        private static void OnRecivedMessageHandler(ServerActionMessage message)
         {
             Console.WriteLine("Manejo del mensaje por parte de la aplicación servidor: " + message);
         }

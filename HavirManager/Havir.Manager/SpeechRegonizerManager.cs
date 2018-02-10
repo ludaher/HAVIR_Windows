@@ -1,6 +1,7 @@
 ﻿using Assets.HAVIR.Scripts.Game.Speech;
 using Havir.Api.Speech;
 using Havir.DataAccess;
+using Havir.Sockets.Entities;
 using Havir.WindowsRecognizer;
 using System;
 using System.Collections;
@@ -12,6 +13,7 @@ namespace Havir.Manager
 {
     public class SpeechRegonizerManager : IDisposable
     {
+        public EmitMessage OnEmitMessage;
 
         private static IVoiceRecognizer _recognizer;
         private static IVoiceRecognizer Recognizer
@@ -24,6 +26,8 @@ namespace Havir.Manager
             }
         }
         public ScriptManager _scriptManager = new ScriptManager(Recognizer);
+        private bool _dictation;
+        private bool _keywordRecognation;
 
 
         public void Dispose()
@@ -36,6 +40,9 @@ namespace Havir.Manager
 
         public void InitRecognizer(bool dictation, bool keywordRecognation)
         {
+            _keywordRecognation = keywordRecognation;
+            _dictation = keywordRecognation;
+            _scriptManager.OnEmitMessage += EmitQuestionMessage;
             _scriptManager.Init();
 
             Recognizer.AddWildcardGrammar("Pregunta", new string[] { "quiero saber", "Deseo saber de", "quiero saber de", "hábleme de " });
@@ -59,6 +66,24 @@ namespace Havir.Manager
             Recognizer.StopKeywordRecognition(id);
         }
 
+        public void Pause()
+        {
+            Recognizer.PauseKeywordRecognition();
+        }
+
+
+        public void Resume()
+        {
+            Recognizer.InitRecognizer(_dictation, _keywordRecognation);
+        }
+
+
+        public void EmitQuestionMessage(UnityActionMessage message)
+        {
+            if (message.Wait)
+                Pause();
+            OnEmitMessage(message);
+        }
         #endregion
     }
 }

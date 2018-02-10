@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Havir.Sockets.Entities;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -25,6 +26,7 @@ namespace Havir.Api.Speech
         public string Audio { get; set; }
         public string Animation { get; set; }
         public string Keyphrase { get; set; }
+        public bool Wait { get; set; }
 
         public NodeType Type { get; set; }
         public bool IsRoot { get { return _isRoot; } }
@@ -33,7 +35,7 @@ namespace Havir.Api.Speech
         public bool IsRunning { get; set; }
 
         public Question(string targetId, string id, string keyphrase, string description, string audio,
-            string animation, NodeType nodeType, bool isRoot)
+            string animation, NodeType nodeType, bool isRoot, bool wait)
         {
             TargetId = targetId.Trim();
             _id = id.Trim();
@@ -45,6 +47,7 @@ namespace Havir.Api.Speech
             if (keyphrase != null)
                 Keyphrase = keyphrase.Trim();
             _isRoot = isRoot;
+            Wait = wait;
             _answers = new List<Answer>();
             Type = nodeType;
         }
@@ -73,14 +76,20 @@ namespace Havir.Api.Speech
 
         private void _EmitKillMessage()
         {
-            EmitMessage("##kill");
+            var message = new UnityActionMessage();
+            message.Message = "##kill";
+            message.MessageType = MessageTypeEnum.Success;
+            EmitMessage(message);
         }
 
         private void _EmitActionMessage()
         {
-            var audio = (Audio == "#value") ? Description : Audio;
-            var animation = (Animation == "#value") ? Description : Animation;
-            EmitMessage(string.Format("{0}|{1}", audio.Trim(), animation.Trim()));
+            var message = new UnityActionMessage();
+            message.Audio = (Audio == "#value") ? Description : Audio;
+            message.Animation = (Animation == "#value") ? Description : Animation;
+            message.Wait = Wait;
+            message.MessageType = MessageTypeEnum.Success;
+            EmitMessage(message);
         }
 
         public void AddArista(Answer arista)
@@ -104,7 +113,7 @@ namespace Havir.Api.Speech
             return _answers.FirstOrDefault(x => x.Choices.Any(o => o.Equals(option)));
         }
 
-        public void EmitMessage(string message)
+        public void EmitMessage(UnityActionMessage message)
         {
             if (OnEmitMessage != null)
                 OnEmitMessage(message);

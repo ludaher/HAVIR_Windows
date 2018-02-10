@@ -1,6 +1,7 @@
 ﻿using Assets.HAVIR.Scripts.Game.Speech;
 using Havir.Api.Speech;
 using Havir.DataAccess;
+using Havir.Sockets.Entities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +13,8 @@ namespace Havir.Manager
 {
     public class ScriptManager
     {
+        public EmitMessage OnEmitMessage;
+
         private static List<Question> _graph;
         private IVoiceRecognizer _recognizer;
         private Question _currentQuestion;
@@ -36,7 +39,7 @@ namespace Havir.Manager
                 _graph = dataAccess.GetAll();
                 foreach (var node in _graph)
                 {
-                    node.OnEmitMessage += MessageManager.EmitQuestionMessage;
+                    node.OnEmitMessage += EmitQuestionMessage;
                     node.OnQuestionSelected += OnQuestionSelectedHandler;
                     if (string.IsNullOrWhiteSpace(node.Keyphrase) == false)
                     {
@@ -140,6 +143,11 @@ namespace Havir.Manager
             }
             var startNode = _graph.Where(x => x.Type == NodeType.Start).FirstOrDefault();
             _currentQuestion = startNode.Execute(keyword);
+        }
+
+        public void EmitQuestionMessage(UnityActionMessage message)
+        {
+            OnEmitMessage(message);
         }
     }
 }

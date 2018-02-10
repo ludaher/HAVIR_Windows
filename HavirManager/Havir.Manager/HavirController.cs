@@ -1,4 +1,6 @@
-﻿using Havir.Sockets.Server;
+﻿using Havir.Api.Speech;
+using Havir.Sockets.Entities;
+using Havir.Sockets.Server;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +14,7 @@ namespace Havir.Manager
     public class HavirController
     {
         private SpeechRegonizerManager _speechManager;
-        private SocketServer _server;
+        private SocketServer<UnityActionMessage, ServerActionMessage> _server;
 
         public void Start()
         {
@@ -23,27 +25,30 @@ namespace Havir.Manager
 
         private void _InitSocketServer()
         {
-            _server = new SocketServer();
+            _server = new SocketServer<UnityActionMessage, ServerActionMessage>();
             _server.Start(4224);
             _server.OnRecivedMessage += OnRecivedMessageHandler;
-            MessageManager.OnEmitMessage += OnEmitMessageHandler;
         }
 
-        private void OnRecivedMessageHandler(string message)
+        private void OnRecivedMessageHandler(ServerActionMessage message)
         {
-            Debug.WriteLine("Mensaje recibido del cliente: " + message);
+            if (message.Resume)
+                _speechManager.Resume();
+
         }
 
         private void _InitSpeechManager()
         {
             _speechManager = new SpeechRegonizerManager();
             _speechManager.InitRecognizer(true, true);
+            _speechManager.OnEmitMessage += OnEmitMessageHandler;
+
         }
 
-        private void OnEmitMessageHandler(string message)
+        private void OnEmitMessageHandler(UnityActionMessage message)
         {
             Debug.WriteLine("Mensaje emitido: " + message);
-            _server.SendMessage(message+"\n");
+            _server.SendMessage(message);
         }
     }
 }

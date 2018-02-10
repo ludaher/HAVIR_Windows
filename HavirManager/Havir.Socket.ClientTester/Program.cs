@@ -1,4 +1,5 @@
 ﻿using Havir.Sockets.Client;
+using Havir.Sockets.Entities;
 using Havir.Sockets.Server;
 using System;
 using System.Collections.Generic;
@@ -13,20 +14,24 @@ namespace Havir.Socket.ClientTester
     {
         static void Main(string[] args)
         {
-            var client = new SocketClient();
+            var client = new SocketClient<ServerActionMessage, UnityActionMessage>();
             client.Connect(4224);
             client.OnRecivedMessage += OnRecivedMessageHandler;
-            var task = new Task(() => client.ReceiveDataFromServer());
+            Task task = new Task(client.ReceiveDataFromServer);
             task.Start();
             while (true)
             {
                 Console.Write("Message to server: ");
-                var message = Console.ReadLine();
-                client.SendMessage(message);
+                var data = new ServerActionMessage();
+                data.MessageType = MessageTypeEnum.Success;
+                data.Message = Console.ReadLine();
+                if (data.Message.Equals("resume"))
+                    data.Resume = true;
+                client.SendMessage(data);
             }
         }
 
-        private static void OnRecivedMessageHandler(string message)
+        private static void OnRecivedMessageHandler(UnityActionMessage message)
         {
             Console.WriteLine("Manejo del mensaje por parte de la aplicación cliente: " + message);
         }

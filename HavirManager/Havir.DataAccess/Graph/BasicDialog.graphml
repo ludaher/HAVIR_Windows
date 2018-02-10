@@ -214,9 +214,11 @@
     </node>
     <node id="n10">
       <data key="d4"/>
-      <data key="d5"><![CDATA[Pregunta con Wildcard
+      <data key="d5">
+  <![CDATA[Pregunta con Wildcard
 |@audio-aHola
-|@animation-telling_a_secret]]></data>
+|@animation-telling_a_secret
+|@wait-]]></data>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.decision">
           <y:Geometry height="40.0" width="80.0" x="-586.3741734374996" y="-1648.4475546818383"/>

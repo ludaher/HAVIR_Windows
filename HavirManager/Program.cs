@@ -16,7 +16,7 @@ namespace Havir.Main
 
         static void Main(string[] args)
         {
-            Debug.WriteLine("Iniciando componente");
+            Debug.WriteLine("Iniciando componente v0.2");
             var manager = new HavirController();
             manager.Start();
             Console.ReadLine();

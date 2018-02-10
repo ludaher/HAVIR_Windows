@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Havir.Sockets.Entities;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,9 +11,11 @@ using System.Threading.Tasks;
 
 namespace Havir.Sockets.Client
 {
-    public class SocketClient : IDisposable
+    public class SocketClient<SendObject, RecibeObject> : IDisposable
+        where SendObject : BaseMessage
+        where RecibeObject : BaseMessage
     {
-        public delegate void RecivedMessage(string message);
+        public delegate void RecivedMessage(RecibeObject message);
         public RecivedMessage OnRecivedMessage;
 
         private Socket senderSock;
@@ -49,15 +53,12 @@ namespace Havir.Sockets.Client
                 // Ensures the code to have permission to access a Socket  
                 permission.Demand();
 
-                // Resolves a host name to an IPHostEntry instance             
-                IPHostEntry ipHost;
                 if (string.IsNullOrWhiteSpace(ip))
-                    ipHost = Dns.Resolve(Dns.GetHostName());
-                else
-                    ipHost = Dns.Resolve(ip);
-
+                {
+                    ip = "127.0.0.1";
+                }
+                IPAddress ipAddr = System.Net.IPAddress.Parse(ip);
                 // Gets first IP address associated with a localhost  
-                IPAddress ipAddr = ipHost.AddressList[0];
 
                 // Creates a network endpoint  
                 IPEndPoint ipEndPoint = new IPEndPoint(ipAddr, port);
@@ -82,11 +83,13 @@ namespace Havir.Sockets.Client
             }
 
         }
-        public void SendMessage(string message)
+        public void SendMessage(SendObject message)
         {
             try
             {
-                byte[] msg = Encoding.Unicode.GetBytes(message + "<Client Quit>");/// 
+                var jsonObject = JsonConvert.SerializeObject(message);
+                byte[] msg = Encoding.Unicode.GetBytes(jsonObject + "<EndMessage>");
+                /// 
                 // Sends data to a connected Socket.  
                 int bytesSend = senderSock.Send(msg);
                 //ReceiveDataFromServer();
@@ -114,17 +117,36 @@ namespace Havir.Sockets.Client
                     bytesRec = senderSock.Receive(bytes);
                     theMessageToReceive += Encoding.Unicode.GetString(bytes, 0, bytesRec);
                 }
-
-                if (OnRecivedMessage != null)
-                    OnRecivedMessage(theMessageToReceive);
-
                 Console.WriteLine("The server reply: " + theMessageToReceive);
+                foreach (var str in theMessageToReceive.Split(new string[] { "<EndMessage>" }, StringSplitOptions.None))
+                {
+                    if (string.IsNullOrWhiteSpace(str))
+                        continue;
+                    try
+                    {
+                        var message = JsonConvert.DeserializeObject<RecibeObject>(str);
+                        message.MessageType = MessageTypeEnum.Success;
+                        if (OnRecivedMessage != null)
+                            OnRecivedMessage(message);
+                    }
+                    catch (Exception ex)
+                    {
+                        var message = (RecibeObject)Activator.CreateInstance(typeof(RecibeObject), new object[] { });
+                        message.MessageType = MessageTypeEnum.Error;
+                        message.Message = ex.ToString();
+                        Console.WriteLine(ex.ToString());
+                        OnRecivedMessage(message);
+                    }
+                }
                 ReceiveDataFromServer();
             }
             catch (Exception exc)
             {
+                var message = (RecibeObject)Activator.CreateInstance(typeof(RecibeObject), new object[] { });
+                message.MessageType = MessageTypeEnum.Error;
+                message.Message = exc.ToString();
                 Console.WriteLine(exc.ToString());
-                OnRecivedMessage(exc.ToString());
+                OnRecivedMessage(message);
                 throw;
             }
         }

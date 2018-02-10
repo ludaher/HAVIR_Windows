@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Havir.Sockets.Entities;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -9,9 +11,11 @@ using System.Threading.Tasks;
 
 namespace Havir.Sockets.Server
 {
-    public class SocketServer : IDisposable
+    public class SocketServer<SendObject, RecibeObject> : IDisposable
+        where SendObject : BaseMessage
+        where RecibeObject : BaseMessage
     {
-        public delegate void RecivedMessage(string message);
+        public delegate void RecivedMessage(RecibeObject message);
         public RecivedMessage OnRecivedMessage;
 
         SocketPermission permission;
@@ -49,17 +53,11 @@ namespace Havir.Sockets.Server
                 // Ensures the code to have permission to access a Socket 
                 permission.Demand();
 
-                // Resolves a host name to an IPHostEntry instance 
-                //IPHostEntry ipHost = Dns.GetHostEntry("");
-                // Resolves a host name to an IPHostEntry instance             
-                IPHostEntry ipHost;
                 if (string.IsNullOrWhiteSpace(ip))
-                    ipHost = Dns.Resolve(Dns.GetHostName());
-                else
-                    ipHost = Dns.Resolve(ip);
-
-                // Gets first IP address associated with a localhost 
-                IPAddress ipAddr = ipHost.AddressList[0];
+                {
+                    ip = "127.0.0.1";
+                }
+                IPAddress ipAddr = System.Net.IPAddress.Parse(ip);
 
                 // Creates a network endpoint 
                 ipEndPoint = new IPEndPoint(ipAddr, port);
@@ -143,17 +141,17 @@ namespace Havir.Sockets.Server
 
         private void ReceiveCallback(IAsyncResult ar)
         {
+            // Fetch a user-defined object that contains information 
+            object[] obj = new object[2];
+            obj = (object[])ar.AsyncState;
+            // Received byte array 
+            byte[] buffer = (byte[])obj[0];
+
+            // A Socket to handle remote host communication. 
+            var handler = (Socket)obj[1];
+
             try
             {
-                // Fetch a user-defined object that contains information 
-                object[] obj = new object[2];
-                obj = (object[])ar.AsyncState;
-
-                // Received byte array 
-                byte[] buffer = (byte[])obj[0];
-
-                // A Socket to handle remote host communication. 
-                var handler = (Socket)obj[1];
 
                 // Received message 
                 string content = string.Empty;
@@ -167,14 +165,29 @@ namespace Havir.Sockets.Server
                     content += Encoding.Unicode.GetString(buffer, 0,
                         bytesRead);
 
-                    // If message contains "<Client Quit>", finish receiving
-                    if (content.IndexOf("<Client Quit>") > -1)
+                    // If message contains "<EndMessage>", finish receiving
+                    if (content.IndexOf("<EndMessage>") > -1)
                     {
-                        // Convert byte array to string
-                        string str = content.Substring(0, content.LastIndexOf("<Client Quit>"));
-                        Console.WriteLine("Read " + str.Length * 2 + " bytes from client.\n Data: " + str);
-                        if (OnRecivedMessage != null)
-                            OnRecivedMessage(str);
+                        foreach (var str in content.Split(new string[] { "<EndMessage>" }, StringSplitOptions.None))
+                        {
+                            if (string.IsNullOrWhiteSpace(str))
+                                continue;
+                            try
+                            {
+                                var message = JsonConvert.DeserializeObject<RecibeObject>(str);
+                                message.MessageType = MessageTypeEnum.Success;
+                                if (OnRecivedMessage != null)
+                                    OnRecivedMessage(message);
+                            }
+                            catch (Exception ex)
+                            {
+                                var message = (RecibeObject)Activator.CreateInstance(typeof(RecibeObject), new object[] { });
+                                message.MessageType = MessageTypeEnum.Error;
+                                message.Message = ex.ToString();
+                                Console.WriteLine(ex.ToString());
+                                OnRecivedMessage(message);
+                            }
+                        }
                     }
                     //else
                     //{
@@ -188,16 +201,27 @@ namespace Havir.Sockets.Server
                     //}
                 }
             }
-            catch (Exception exc) { Console.WriteLine(exc.ToString()); throw; }
+            catch (SocketException ex)
+            {
+                Console.WriteLine(ex.Message);
+                handler.Dispose();
+                handlers.Remove(handler);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                throw;
+            }
         }
 
-        public void SendMessage(string message)
+        public void SendMessage(SendObject message)
         {
             try
             {
+                var jsonObject = JsonConvert.SerializeObject(message);
                 // Prepare the reply message 
                 byte[] byteData =
-                    Encoding.Unicode.GetBytes(message);
+                    Encoding.Unicode.GetBytes(jsonObject + "<EndMessage>");
                 foreach (var handler in handlers)
                 {
                     // Sends data asynchronously to a connected Socket 

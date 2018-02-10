@@ -182,5 +182,10 @@ namespace Havir.WindowsRecognizer
             return id;
         }
 
+        public void PauseKeywordRecognition()
+        {
+            _recognizer.RecognizeAsyncStop();
+        }
+
     }
 }

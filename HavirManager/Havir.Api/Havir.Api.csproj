@@ -53,6 +53,12 @@
     <Compile Include="Speech\IVoiceRecognizer.cs" />
     <Compile Include="Speech\QuestionsModel.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Havir.Sockets\Havir.Sockets.csproj">
+      <Project>{2EDEA952-CE2F-4F4E-A51E-DED2841AC0B2}</Project>
+      <Name>Havir.Sockets</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

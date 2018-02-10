@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Havir.Sockets.Entities;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -9,7 +10,7 @@ namespace Havir.Api.Speech
 
     public delegate void KeyWordRecognized(KeywordRecognizedArgs args);
     public delegate void WilcardRecognized(WilcardRecognizedArgs args);
-    public delegate void EmitMessage(string message);
+    public delegate void EmitMessage(UnityActionMessage message);
     public interface IVoiceRecognizer : IDisposable
     {
 
@@ -60,6 +61,11 @@ namespace Havir.Api.Speech
 
         void StartKeywordRecognition(Guid id);
 
+        /// <summary>
+        /// Elimina un grupo de palabras claves del reconocedor de voz
+        /// </summary>
+        /// <param name="id">Identificador único del grupo de palabras clave</param>
+        void PauseKeywordRecognition();
 
         Guid AddWildcardGrammar(string semmanticKey, string[] keywords);
 
