@@ -57,20 +57,20 @@ namespace Havir.Api.Speech
             if (kill == true)
                 _EmitKillMessage();
             _EmitActionMessage();
-            if (Type != NodeType.Decision)
-            {
-                var nextQuestion = _answers.Select(x => x.Target).FirstOrDefault();
-                if (nextQuestion != null)
-                {
-                    return nextQuestion.Execute(keyword, false);
-                }
-            }
-            else
-            {
-                IsRunning = true;
-                if (OnQuestionSelected != null)
-                    OnQuestionSelected(this);
-            }
+            //if (Type != NodeType.Decision)
+            //{
+            //    var nextQuestion = _answers.Select(x => x.Target).FirstOrDefault();
+            //    if (nextQuestion != null)
+            //    {
+            //        return nextQuestion.Execute(keyword, false);
+            //    }
+            //}
+            //else
+            //{
+            IsRunning = true;
+            if (OnQuestionSelected != null)
+                OnQuestionSelected(this);
+            //}
             return this;
         }
 
@@ -85,8 +85,9 @@ namespace Havir.Api.Speech
         private void _EmitActionMessage()
         {
             var message = new UnityActionMessage();
-            message.Audio = (Audio == "#value") ? Description : Audio;
-            message.Animation = (Animation == "#value") ? Description : Animation;
+            message.Description = Description;
+            message.Audio = Audio;
+            message.Animation = Animation;
             message.Wait = Wait;
             message.MessageType = MessageTypeEnum.Success;
             EmitMessage(message);
@@ -94,17 +95,17 @@ namespace Havir.Api.Speech
 
         public void AddArista(Answer arista)
         {
-            if (Type != NodeType.Decision && _answers.Any())
-                throw new Exception("Los únicos nodos que permiten múltiples salidas, son los nodos de decisión.");
+            //if (Type != NodeType.Decision && _answers.Any())
+            //    throw new Exception("Los únicos nodos que permiten múltiples salidas, son los nodos de decisión.");
             _answers.Add(arista);
         }
 
         public void AddArista(List<Answer> aristas)
         {
-            if (Type != NodeType.Decision && _answers.Any())
-                throw new Exception("Los únicos nodos que permiten múltiples salidas, son los nodos de decisión.");
-            if (Type != NodeType.Decision && aristas.Count > 1)
-                throw new Exception("Los únicos nodos que permiten múltiples salidas, son los nodos de decisión.");
+            //if (Type != NodeType.Decision && _answers.Any())
+            //    throw new Exception("Los únicos nodos que permiten múltiples salidas, son los nodos de decisión.");
+            //if (Type != NodeType.Decision && aristas.Count > 1)
+            //    throw new Exception("Los únicos nodos que permiten múltiples salidas, son los nodos de decisión.");
             _answers.AddRange(aristas);
         }
 

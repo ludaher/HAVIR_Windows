@@ -51,7 +51,7 @@ namespace Havir.Manager
                     {
                         if (node.Type != NodeType.Decision || arista.Choices == null || arista.Choices.Any() == false)
                             continue;
-                        if (arista.Choices.Length == 1 && arista.Choices[0].ToLower() == "@wildcard")
+                        if (arista.Choices.Length == 1 && arista.Choices[0].ToLower() == "*")
                             arista.GrammarId = AddWildcardRecognition(
                                 string.Format("#node{0}|{1}", node.Id, arista.TargetId));
                         else

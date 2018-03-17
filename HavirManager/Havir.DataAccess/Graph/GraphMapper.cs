@@ -1,4 +1,5 @@
 ﻿using Havir.Api.Speech;
+using Havir.DataAccess;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,77 +21,136 @@ namespace Assets.HAVIR.Scripts.Game.Speech.Graph
             var xml = XElement.Load(graphPath);
 
             var graphXml = xml.Elements("{http://graphml.graphdrawing.org/xmlns}graph");
+            var keys = xml
+                .Elements("{http://graphml.graphdrawing.org/xmlns}key")
+                .Where(x => x.Attribute("attr.name") != null);
+            var nameId = keys
+                .FirstOrDefault(x => x.Attribute("attr.name").Value.Equals("NODO"));
+            var agentId = keys
+                .FirstOrDefault(x => x.Attribute("attr.name").Value.Equals("AGENT"));
+            var audioId = keys
+                .FirstOrDefault(x => x.Attribute("attr.name").Value.Equals("AUDIO"));
+            var animationId = keys
+                .FirstOrDefault(x => x.Attribute("attr.name").Value.Equals("ANIM"));
+            var keywordId = keys
+                .FirstOrDefault(x => x.Attribute("attr.name").Value.Equals("KEYWORD"));
+            var hvId = keys
+                .FirstOrDefault(x => x.Attribute("attr.name").Value.Equals("HV"));
+            var userId = keys
+                .FirstOrDefault(x => x.Attribute("attr.name").Value.Equals("USUARIO"));
+            var groupId = keys
+                .FirstOrDefault(x => x.Attribute("attr.name").Value.Equals("GRUPO"));
 
+            if (nameId == null || agentId == null || audioId == null || animationId == null ||
+                keywordId == null || hvId == null || hvId == null ||
+                userId == null || groupId == null)
+                throw new Exception("Los atributos NODO, AGENT, AUDIO, ANIM. KEYWORD, HV, USUARIO Y GRUPO son requeridos.");
+            var waitId = keys
+                .FirstOrDefault(x => x.Attribute("attr.name").Value.Equals("WAIT"));
+            string firstAgent = null;
             foreach (var node in graphXml.Elements("{http://graphml.graphdrawing.org/xmlns}node"))
             {
-                var d5 = node.Elements("{http://graphml.graphdrawing.org/xmlns}data").FirstOrDefault(x => x.Attribute("key").Value.Equals("d5"));
-                var d6 = node.Elements("{http://graphml.graphdrawing.org/xmlns}data").FirstOrDefault(x => x.Attribute("key").Value.Equals("d6"));
+                var name = node
+                    .Elements("{http://graphml.graphdrawing.org/xmlns}data")
+                    .FirstOrDefault(x => x.Attribute("key").Value.Equals(nameId.Attribute("id").Value));
+                var agent = node
+                    .Elements("{http://graphml.graphdrawing.org/xmlns}data")
+                    .FirstOrDefault(x => x.Attribute("key").Value.Equals(agentId.Attribute("id").Value));
+                var audio = node
+                    .Elements("{http://graphml.graphdrawing.org/xmlns}data")
+                    .FirstOrDefault(x => x.Attribute("key").Value.Equals(audioId.Attribute("id").Value));
+                var animation = node
+                    .Elements("{http://graphml.graphdrawing.org/xmlns}data")
+                    .FirstOrDefault(x => x.Attribute("key").Value.Equals(animationId.Attribute("id").Value));
+                var keyword = node
+                    .Elements("{http://graphml.graphdrawing.org/xmlns}data")
+                    .FirstOrDefault(x => x.Attribute("key").Value.Equals(keywordId.Attribute("id").Value));
+                var hv = node
+                    .Elements("{http://graphml.graphdrawing.org/xmlns}data")
+                    .FirstOrDefault(x => x.Attribute("key").Value.Equals(hvId.Attribute("id").Value));
+                var user = node
+                    .Elements("{http://graphml.graphdrawing.org/xmlns}data")
+                    .FirstOrDefault(x => x.Attribute("key").Value.Equals(userId.Attribute("id").Value));
+                var group = node
+                    .Elements("{http://graphml.graphdrawing.org/xmlns}data")
+                    .FirstOrDefault(x => x.Attribute("key").Value.Equals(groupId.Attribute("id").Value));
+
+                if (string.IsNullOrWhiteSpace(firstAgent) && agent != null)
+                    firstAgent = agent.Value;
+                if (string.IsNullOrWhiteSpace(agent.Value))
+                    agent.Value = firstAgent;
+
                 string
                     targetId = node.Attribute("id").Value,
-                    id = node.Attribute("id").Value,
-                    keyphrase = "",
-                    description = "",
-                    audio = "",
-                    animation = "";
-                bool wait = false;
-                if (d5 != null)
-                {
-                    var data = d5.Value.Split('|');
-                    description = data[0];
-                    audio = (data.FirstOrDefault(x => x.StartsWith("@audio-")) ?? string.Empty).Replace("@audio-", "");
-                    animation = (data.FirstOrDefault(x => x.StartsWith("@animation-")) ?? string.Empty).Replace("@animation-", "");
-                    keyphrase = (data.FirstOrDefault(x => x.StartsWith("@keyphrase-")) ?? string.Empty).Replace("@keyphrase-","");
-                    wait = (data.Any(x => x.StartsWith("@wait-")));
-                    if (data.Any(x => x.StartsWith("@id-")))
-                        id = data.FirstOrDefault(x => x.StartsWith("@id-"));
-                    //audio = (data.Length > 1) ? data[1].Replace("@audio-", "") : description;
-                    //data.Any(x => x.Trim().IndexOf("audio-")>=0) ? string.Empty : data.FirstOrDefault(x => x.StartsWith("@audio-"));
-                    //animation = (data.Length > 2) ? data[2].Replace("@animation-", "") : description;
-                    //data.Any(x => x.IndexOf("animation-") >= 0) ? string.Empty : data.FirstOrDefault(x => x.StartsWith("@animation-"));
-                }
+                    id = node.Attribute("id").Value;
 
-                var genericNode = (XElement)d6.FirstNode;
-                var type = genericNode.Attribute("configuration").Value;
+                bool wait = waitId != null && node
+                    .Elements("{http://graphml.graphdrawing.org/xmlns}data")
+                    .FirstOrDefault(x => x.Attribute("key").Value.Equals(groupId.Attribute("id").Value))
+                    .Value.ToLower().Equals("true");
 
                 var targetEdges = graphXml.Elements("{http://graphml.graphdrawing.org/xmlns}edge").Where(x => x.Attribute("target").Value == id);
-                var graphNode = new Question(targetId, id, keyphrase, description, audio, animation, _getNodeType(type), targetEdges.Any(), wait);
+                var graphNode = new Question(targetId, id, keyword.Value, hv.Value, audio.Value, animation.Value, _getNodeType(name.Value), targetEdges.Any(), wait);
 
                 graph.Add(graphNode);
             }
 
             var edges = graphXml.Elements("{http://graphml.graphdrawing.org/xmlns}edge");
-            foreach (var edge in edges)
+            using (var questionDataAccess = new QuestionDataAccess())
             {
-                var edgeData = edge.Elements("{http://graphml.graphdrawing.org/xmlns}data").FirstOrDefault(x => x.Attribute("key").Value.Equals("d9"));
-                var arista = new Answer() { TargetId = edge.Attribute("target").Value };
-                string[] tempChoices;
-                if (edgeData != null)
+                foreach (var edge in edges)
                 {
+                    var edgeUserData = edge.Elements("{http://graphml.graphdrawing.org/xmlns}data")
+                        .FirstOrDefault(x => x.Attribute("key").Value.Equals(userId.Attribute("id").Value));
+
+                    var edgeGroupData = edge.Elements("{http://graphml.graphdrawing.org/xmlns}data")
+                        .FirstOrDefault(x => x.Attribute("key").Value.Equals(groupId.Attribute("id").Value));
+
+                    var arista = new Answer() { TargetId = edge.Attribute("target").Value };
                     var choices = new List<string>();
-                    foreach (var option in edgeData.Value.ToLower().Trim().TrimStart(',').TrimEnd(',').Split(','))
+
+                    if (edgeGroupData != null)
                     {
-                        if (PredefinedAnswers.GetPredefinedAnswers().TryGetValue(option, out tempChoices))
-                            choices.AddRange(tempChoices);
-                        else
-                            choices.Add(option.Trim());
+                        var groupChoises = edgeGroupData.Value.ToLower().Trim().TrimStart(',').TrimEnd(',').Split(',');
+                        string tempChoices;
+                        foreach (var option in groupChoises)
+                        {
+                            if (string.IsNullOrWhiteSpace(option))
+                                continue;
+                            if (questionDataAccess.GetPredefinedAnswers().TryGetValue(option, out tempChoices))
+                                choices.AddRange(tempChoices.Split(';'));
+                            else
+                                Console.WriteLine($"No se encontó el grupo {option} en la arista ");
+                        }
                     }
-                    arista.Choices = choices.ToArray();
+                    if (edgeUserData != null)
+                    {
+                        choices.AddRange(edgeUserData.Value.ToLower().Trim().TrimStart(';').TrimEnd(';').Split(';'));
+                    }
+
+                    arista.Choices = choices.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+
+                    arista.Target = graph.Find(x => x.Id.Equals(arista.TargetId));
+                    graph.Find(x => x.TargetId.Equals(edge.Attribute("source").Value)).AddArista(arista);
                 }
-                arista.Target = graph.Find(x => x.Id.Equals(arista.TargetId));
-                graph.Find(x => x.TargetId.Equals(edge.Attribute("source").Value)).AddArista(arista);
             }
             return graph;
         }
 
-        private static NodeType _getNodeType(string type)
+        private static NodeType _getNodeType(string name)
         {
-            if (type == "com.yworks.flowchart.decision")
-                return NodeType.Decision;
-            else if (type == "com.yworks.flowchart.data")
-                return NodeType.Data;
-            else if (type == "com.yworks.flowchart.start1" || type == "com.yworks.flowchart.start2")
+            if (name.ToLower() == "inicio")
                 return NodeType.Start;
-            return NodeType.Terminator;
+            else
+                return NodeType.Decision;
+
+            //if (type == "com.yworks.flowchart.decision")
+            //    return NodeType.Decision;
+            //else if (type == "com.yworks.flowchart.data")
+            //    return NodeType.Data;
+            //else if (type == "com.yworks.flowchart.start1" || type == "com.yworks.flowchart.start2")
+            //    return NodeType.Start;
+            //return NodeType.Terminator;
         }
 
     }

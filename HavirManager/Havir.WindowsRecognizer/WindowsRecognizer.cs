@@ -1,4 +1,5 @@
-﻿using Havir.Api.Speech;
+﻿using Havir.Api.Log;
+using Havir.Api.Speech;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace Havir.WindowsRecognizer
 
         private void _InitRecognizer()
         {
-            _recognizer = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("es-CO"));
+            _recognizer = new SpeechRecognitionEngine();
             _recognizer.BabbleTimeout = TimeSpan.FromSeconds(30);
             //_recognizer.EndSilenceTimeout = TimeSpan.FromSeconds(30);
             _recognizer.LoadGrammar(new DictationGrammar());
@@ -38,24 +39,51 @@ namespace Havir.WindowsRecognizer
             ///
             _recognizer.SpeechRecognized +=
               new EventHandler<SpeechRecognizedEventArgs>(OnSpeechRecognized);
-            _recognizer.SpeechRecognized += WildcardInputHandler;
+            _recognizer.LoadGrammarCompleted += grammarLoadded;
+            //_recognizer.SpeechRecognized += WildcardInputHandler;
             _recognizer.SpeechDetected += OnSpeechDetectedHandler;
             _recognizer.AudioSignalProblemOccurred += AudioSignalProblemOccurredHandler;
+            _recognizer.RecognizeCompleted += RecognizedCompleted;
+            _recognizer.AudioStateChanged += OnAudioStateChange;
+            _recognizer.SpeechHypothesized += Hipothesized;
 
+        }
+
+        private void Hipothesized(object sender, SpeechHypothesizedEventArgs e)
+        {
+            Logger.Write("Hipotesis." + e.Result.Text);
+        }
+
+        private void OnAudioStateChange(object sender, AudioStateChangedEventArgs e)
+        {
+            Logger.Write("Cambio de estado." + e.AudioState);
+        }
+
+        private void RecognizedCompleted(object sender, RecognizeCompletedEventArgs e)
+        {
+            Logger.Write("Reconocimiento finalizado.");
+        }
+
+        private void grammarLoadded(object sender, LoadGrammarCompletedEventArgs e)
+        {
+            Logger.Write("Gramatica cargada.");
         }
 
         private void AudioSignalProblemOccurredHandler(object sender, AudioSignalProblemOccurredEventArgs e)
         {
+            //Logger.Debug("Problema detectado con la señal del audio" + e.AudioSignalProblem);
         }
 
         private void OnSpeechDetectedHandler(object sender, SpeechDetectedEventArgs e)
         {
+            Logger.Debug("Escuchando "+ e.AudioPosition);
         }
 
         private void WildcardInputHandler(object sender, SpeechRecognizedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(e.Result.Text))
                 return;
+            Logger.Debug("Reconocido: " + e.Result.Text);
             string keyword;
             foreach (var wildcard in _wildcards)
             {
@@ -70,6 +98,7 @@ namespace Havir.WindowsRecognizer
 
         private void OnSpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
+            Logger.Debug("Reconocido: "+e.Result.Text);
             if (e.Result.Semantics.Any())
             {
                 foreach (var semantic in e.Result.Semantics)
@@ -79,7 +108,7 @@ namespace Havir.WindowsRecognizer
             }
             else
             {
-                foreach(var anything in _anything.Where(x=>x.Value.Enabled))
+                foreach (var anything in _anything.Where(x => x.Value.Enabled))
                 {
                     OnKeywordRecognized(new KeywordRecognizedArgs(anything.Value.AnythingKey, e.Result.Text));
                 }
@@ -108,10 +137,10 @@ namespace Havir.WindowsRecognizer
         private Guid _AddAnything(string semanticKey)
         {
             var id = Guid.NewGuid();
-            _anything.Add(id,new Anything() { AnythingKey = semanticKey });
+            _anything.Add(id, new Anything() { AnythingKey = semanticKey });
             return id;
         }
-        
+
         public Guid AddKeywordRecognition(string[] keywords)
         {
             throw new NotImplementedException();

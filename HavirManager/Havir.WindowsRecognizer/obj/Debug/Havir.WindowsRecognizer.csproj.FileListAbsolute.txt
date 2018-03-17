@@ -17,6 +17,7 @@ C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.WindowsRecogniz
 C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.WindowsRecognizer\obj\Debug\Havir.WindowsRecognizer.dll
 C:\Users\herre\Documents\GitHub\HAVIR_Windows\HavirManager\Havir.WindowsRecognizer\obj\Debug\Havir.WindowsRecognizer.pdb
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.WindowsRecognizer\bin\Debug\Graph\BasicDialog.graphml
+C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.WindowsRecognizer\bin\Debug\Graph\dialogo ejemplo.graphml
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.WindowsRecognizer\bin\Debug\Havir.WindowsRecognizer.dll
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.WindowsRecognizer\bin\Debug\Havir.WindowsRecognizer.pdb
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.WindowsRecognizer\bin\Debug\Havir.Api.dll
@@ -31,3 +32,4 @@ C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirMa
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.WindowsRecognizer\obj\Debug\Havir.WindowsRecognizer.csproj.CoreCompileInputs.cache
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.WindowsRecognizer\obj\Debug\Havir.WindowsRecognizer.dll
 C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.WindowsRecognizer\obj\Debug\Havir.WindowsRecognizer.pdb
+C:\Users\Lucho\Documents\En ejecución\Proyectos\UAN\HAVIR\HAVIR_Windows\HavirManager\Havir.WindowsRecognizer\bin\Debug\Graph\PredefinedAnswers.xml

@@ -3,8 +3,10 @@ using Havir.Sockets.Entities;
 using Havir.Sockets.Server;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
+using System.Speech.Synthesis;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,8 +14,11 @@ namespace Havir.Socket.ClientTester
 {
     class Program
     {
+        private static readonly SpeechSynthesizer _speechSynthesizer = new SpeechSynthesizer();
+
         static void Main(string[] args)
         {
+            InitializeVoice();
             var client = new SocketClient<ServerActionMessage, UnityActionMessage>();
             client.Connect(4224);
             client.OnRecivedMessage += OnRecivedMessageHandler;
@@ -34,6 +39,14 @@ namespace Havir.Socket.ClientTester
         private static void OnRecivedMessageHandler(UnityActionMessage message)
         {
             Console.WriteLine("Manejo del mensaje por parte de la aplicación cliente: " + message);
+            if (string.IsNullOrWhiteSpace(message.Audio) == false)
+                _speechSynthesizer.Speak(message.Audio);
         }
+
+        private static void InitializeVoice()
+        {
+
+        }
+
     }
 }

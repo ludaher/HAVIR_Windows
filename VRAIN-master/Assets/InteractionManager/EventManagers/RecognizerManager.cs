@@ -53,9 +53,27 @@ public class RecognizerManager : MonoBehaviour
         if (queue.Count == 0) return;
         var nextItem = queue.Dequeue();
         if (nextItem == null) return;
-        _Speech(nextItem.Audio);
-        _Animation(nextItem.Animation);
+        if (string.IsNullOrWhiteSpace(nextItem.Audio))
+            _GenerateSpeech(nextItem.Description);
+        else
+            _Speech(nextItem.Audio);
+        if (string.IsNullOrWhiteSpace(nextItem.Animation))
+            _GenerateAnimation(nextItem.Description);
+        else
+            _Animation(nextItem.Animation);
         currentAgentStatus.recognizerPaused = nextItem.Wait;
+    }
+
+    private void _GenerateAnimation(string description)
+    {
+        ///TODO: Generar animaciónes automáticas
+        _Animation("talking_1");
+    }
+
+    private void _GenerateSpeech(string description)
+    {
+        ///TODO: Generar audio automático
+        _Speech("aGusto");
     }
 
     void RunGame()

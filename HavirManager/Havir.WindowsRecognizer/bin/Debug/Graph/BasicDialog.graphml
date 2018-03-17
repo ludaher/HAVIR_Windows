@@ -36,7 +36,7 @@
     <node id="n1">
       <data key="d4"/>
       <data key="d5"><![CDATA[Buenos días quiere conocer más información acerca de nuestro trabajo?
-|@audio-aGusto
+|@audio-#value
 |@animation-talk_sad]]></data>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.decision">

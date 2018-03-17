@@ -11,6 +11,7 @@ namespace Havir.Sockets.Entities
     [Serializable]
     public class UnityActionMessage:BaseMessage
     {
+        public string Description { get; set; }
         public string Animation { get; set; }
         public string Audio { get; set; }
         public string Agent { get; set; }
@@ -19,6 +20,7 @@ namespace Havir.Sockets.Entities
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
+            sb.AppendLine(string.Format("Description: {0}", Description));
             sb.AppendLine(string.Format("Animation: {0}", Animation));
             sb.AppendLine(string.Format("Audio: {0}", Audio));
             return sb.ToString();

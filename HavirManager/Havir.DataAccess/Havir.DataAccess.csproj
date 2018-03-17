@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Graph\GraphMapper.cs" />
     <Compile Include="Graph\PredefinedAnswers.cs" />
+    <Compile Include="Graph\SerializableDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuestionDataAccess.cs" />
   </ItemGroup>
@@ -57,7 +58,13 @@
     <Content Include="Graph\BasicDialog.graphml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Graph\PredefinedAnswers.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Graph\BasicDialog.graphml.meta" />
+    <Content Include="Graph\dialogo ejemplo.graphml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Graph\GraphMapper.cs.meta" />
     <None Include="Graph\PredefinedAnswers.cs.meta" />
     <None Include="Graph\QuestionsModel.cs.meta" />

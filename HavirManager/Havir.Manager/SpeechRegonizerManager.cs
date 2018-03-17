@@ -13,8 +13,8 @@ namespace Havir.Manager
 {
     public class SpeechRegonizerManager : IDisposable
     {
-        public EmitMessage OnEmitMessage;
-
+        public EmitMessage OnEmitMessage; 
+          
         private static IVoiceRecognizer _recognizer;
         private static IVoiceRecognizer Recognizer
         {
@@ -42,7 +42,7 @@ namespace Havir.Manager
         {
             _keywordRecognation = keywordRecognation;
             _dictation = keywordRecognation;
-            _scriptManager.OnEmitMessage += EmitQuestionMessage;
+            _scriptManager.OnEmitMessage += EmitQuestionMessage; 
             _scriptManager.Init();
 
             Recognizer.AddWildcardGrammar("Pregunta", new string[] { "quiero saber", "Deseo saber de", "quiero saber de", "hábleme de " });
@@ -50,7 +50,7 @@ namespace Havir.Manager
 
             Recognizer.InitRecognizer(dictation, keywordRecognation);
         }
-
+        
         private void OnWilcardRecognizedHandler(KeywordRecognizedArgs args)
         {
             Debug.Write("Wilcard reconocido: " + args.Text);
@@ -83,7 +83,7 @@ namespace Havir.Manager
             if (message.Wait)
                 Pause();
             OnEmitMessage(message);
-        }
+        } 
         #endregion
     }
 }

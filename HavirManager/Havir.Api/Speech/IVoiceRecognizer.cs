@@ -10,7 +10,7 @@ namespace Havir.Api.Speech
 
     public delegate void KeyWordRecognized(KeywordRecognizedArgs args);
     public delegate void WilcardRecognized(WilcardRecognizedArgs args);
-    public delegate void EmitMessage(UnityActionMessage message);
+    public delegate void EmitMessage(UnityActionMessage message); 
     public interface IVoiceRecognizer : IDisposable
     {
 
