@@ -67,7 +67,7 @@ public class RecognizerManager : MonoBehaviour
     private void _GenerateAnimation(string description)
     {
         ///TODO: Generar animaciónes automáticas
-        _Animation("talking_1");
+        _Animation("Gusto");
     }
 
     private void _GenerateSpeech(string description)
